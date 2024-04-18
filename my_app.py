@@ -4,12 +4,12 @@ import sys
 from PySide6.QtWidgets import QWidget, QLabel, QTextEdit, QVBoxLayout, QApplication, QMainWindow, QPushButton
 
 import version
-import 自动更新模块
+import auto_update_module
 
-全局_项目名称 = "duolabmeng6/qtAutoUpdateApp"
-全局_应用名称 = "my_app.app"
-全局_当前版本 = version.version
-全局_官方网址 = "https://github.com/duolabmeng6/qtAutoUpdateApp"
+PROJECT_NAME = "duolabmeng6/qtAutoUpdateApp"
+APP_NAME = "my_app.app"
+CUR_VERSION = version.version
+OFFICIAL_SITE = "https://github.com/duolabmeng6/qtAutoUpdateApp"
 
 
 class Main(QMainWindow):
@@ -19,10 +19,10 @@ class Main(QMainWindow):
 
     def 按钮_检查更新点击(self):
         # 弹出窗口
-        self.winUpdate = 自动更新模块.窗口_更新软件(Github项目名称=全局_项目名称,
-                                        应用名称=全局_应用名称,
-                                        当前版本号=全局_当前版本,
-                                        官方网址=全局_官方网址)
+        self.winUpdate = auto_update_module.WndUpdateSoftware(github_project_name=PROJECT_NAME,
+                                                              app_name=APP_NAME,
+                                                              cur_version=CUR_VERSION,
+                                                              official_site=OFFICIAL_SITE)
         self.winUpdate.show()
 
     def init_ui(self):
@@ -32,14 +32,14 @@ class Main(QMainWindow):
         # 创建容器
         self.main_widget = QWidget()
 
-        self.按钮_检查更新 = QPushButton(self.main_widget)
-        self.按钮_检查更新.clicked.connect(self.按钮_检查更新点击)
-        self.按钮_检查更新.resize(160, 100)
-        self.按钮_检查更新.setText(f'检查更新')
-        self.按钮_检查更新.show()
+        self.btn_check_update = QPushButton(self.main_widget)
+        self.btn_check_update.clicked.connect(self.按钮_检查更新点击)
+        self.btn_check_update.resize(160, 100)
+        self.btn_check_update.setText(f'检查更新')
+        self.btn_check_update.show()
 
         self.label = QLabel(self.main_widget)
-        self.label.setText(f'当前版本:{全局_当前版本}')
+        self.label.setText(f'当前版本:{CUR_VERSION}')
         self.label.resize(160, 100)
         self.label.show()
 
@@ -55,16 +55,17 @@ class Main(QMainWindow):
 
         # 创建布局容器并应用
         self.layout = QVBoxLayout(self.main_widget)
-        self.layout.addWidget(self.按钮_检查更新)
+        self.layout.addWidget(self.btn_check_update)
         self.layout.addWidget(self.label)
         self.layout.addWidget(self.label2)
         self.layout.addWidget(self.textEdit, 1)
         self.setCentralWidget(self.main_widget)
 
-        self.检查更新线程 = 自动更新模块.检查更新线程(全局_项目名称, self.检查更新回到回调函数)
-        self.检查更新线程.start()
+        self.thd_check_update = auto_update_module.thd_check_update(
+            PROJECT_NAME, self.callback_check_update)
+        self.thd_check_update.start()
 
-    def 检查更新回到回调函数(self, 数据):
+    def callback_check_update(self, 数据):
         print("数据", 数据)
         最新版本 = 数据['版本号']
         self.label2.setText(f'最新版本:{最新版本}')
@@ -72,7 +73,7 @@ class Main(QMainWindow):
 
 
 if __name__ == '__main__':
-    自动更新模块.初始化()
+    auto_update_module.init()
 
     app = QApplication(sys.argv)
     win = Main()

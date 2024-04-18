@@ -7,24 +7,24 @@ import sys
 from PySide6 import QtCore
 from PySide6.QtCore import QThread
 
-from .压缩包文件处理 import zip解压2
-from .文件下载模块 import 下载文件
-from .自动更新读取版本模块 import 获取最新版本号和下载地址
+from .zip_file_handle import zip解压2
+from .file_download_module import 下载文件
+from .auto_update_read_version_module import 获取最新版本号和下载地址
 
 
-def 系统_是否为window系统():
+def system_is_win():
     return platform.system().lower() == 'windows'
 
 
-def 系统_是否为linux系统():
+def system_is_linux():
     return platform.system().lower() == 'linux'
 
 
-def 系统_是否为mac系统():
+def system_is_mac():
     return platform.system().lower() == 'darwin'
 
 
-def 取自身路径Window():
+def win_get_self_path():
     # 如果不处于编译状态反馈空
     try:
         编译后路径 = sys._MEIPASS
@@ -33,7 +33,7 @@ def 取自身路径Window():
         return ""
 
 
-def 取自身MacOs应用路径():
+def mac_get_self_path():
     # 如果不处于编译状态反馈空
     try:
         编译后路径 = sys._MEIPASS
@@ -50,10 +50,10 @@ def 取自身MacOs应用路径():
         return ""
 
 
-def 更新自己MacOS应用(资源压缩包, 应用名称="my_app.app"):
+def update_self_mac_app(资源压缩包, 应用名称="my_app.app"):
     # 资源压缩包 = "/Users/chensuilong/Desktop/pythonproject/autotest/dist/my_app.2.0.zip"
     # 应用名称 例如 my_app.app 这你的压缩包里面压缩的应用文件夹名称
-    MacOs应用路径 = 取自身MacOs应用路径()
+    MacOs应用路径 = mac_get_self_path()
     if MacOs应用路径 != "":
         app目录父目录 = MacOs应用路径[:MacOs应用路径.rfind('/')]
         print(f"资源压缩包 {资源压缩包} app目录父目录{app目录父目录} MacOs应用路径{MacOs应用路径}")
@@ -72,7 +72,7 @@ def 更新自己MacOS应用(资源压缩包, 应用名称="my_app.app"):
         return False, ""
 
 
-def _取运行目录():
+def get_run_dir():
     """ PyInstaller 单文件的运行目录  """
     if getattr(sys, 'frozen', False):
         return os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -80,7 +80,7 @@ def _取运行目录():
         return sys.path[0]
 
 
-def 初始化():
+def init():
     # 构建时测试运行是否正常的
     传入参数 = sys.argv
     if len(传入参数) == 2:
@@ -88,12 +88,12 @@ def 初始化():
         if 参数1 == "test":
             print("app run success")
             # 写出文件
-            with open(_取运行目录() + "/test.txt", "w") as f:
+            with open(get_run_dir() + "/test.txt", "w") as f:
                 f.write("app run success")
             sys.exit(0)
 
     # 如果在window系统中存在旧的文件则自动删除
-    自身路径Window = 取自身路径Window()
+    自身路径Window = win_get_self_path()
     if 自身路径Window == "":
         # print("非Window编译环境")
         return False, ""
@@ -104,10 +104,10 @@ def 初始化():
         os.remove(旧的文件名)
 
 
-def 更新自己Window应用(exe资源文件路径):
+def update_self_win_app(exe资源文件路径):
     # window更新方法
     # exe资源文件路径 = r"C:\Users\csuil\.virtualenvs\QtEsayDesigner\Scripts\dist\my_app1.0.exe"
-    自身路径Window = 取自身路径Window()
+    自身路径Window = win_get_self_path()
     if 自身路径Window == "":
         print("非Window编译环境")
         return False, ""
@@ -130,11 +130,11 @@ def 更新自己Window应用(exe资源文件路径):
     return True, ""
 
 
-class 下载文件线程类(QThread):
+class DownloadFileThreadClass(QThread):
     刷新进度条 = QtCore.Signal(int, str)  # 进度 提示文本
 
     def __init__(self, *args, **kwargs):
-        super(下载文件线程类, self).__init__()
+        super(DownloadFileThreadClass, self).__init__()
         self.窗口 = kwargs.get('窗口')
         self.下载地址 = kwargs.get('下载地址')
         self.保存地址 = kwargs.get('保存地址')
@@ -181,9 +181,9 @@ class 下载文件线程类(QThread):
             self.进度条.setValue(int(进度))
 
 
-class 检查更新线程(QThread):
+class thd_check_update(QThread):
     def __init__(self, Github项目名称="duolabmeng6/qtAutoUpdateApp", 回调函数=None):
-        super(检查更新线程, self).__init__()
+        super(thd_check_update, self).__init__()
         # 绑定线程开始事件
         self.started.connect(self.ui_开始)
         # 绑定线程结束事件
