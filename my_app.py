@@ -61,7 +61,7 @@ class Main(QMainWindow):
         self.layout.addWidget(self.textEdit, 1)
         self.setCentralWidget(self.main_widget)
 
-        self.thd_check_update = auto_update_module.thd_check_update(
+        self.thd_check_update = auto_update_module.ThdCheckUpdate(
             PROJECT_NAME, self.callback_check_update)
         self.thd_check_update.start()
 

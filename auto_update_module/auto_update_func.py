@@ -181,18 +181,18 @@ class DownloadFileThreadClass(QThread):
             self.进度条.setValue(int(进度))
 
 
-class thd_check_update(QThread):
-    def __init__(self, Github项目名称="duolabmeng6/qtAutoUpdateApp", 回调函数=None):
-        super(thd_check_update, self).__init__()
+class ThdCheckUpdate(QThread):
+    def __init__(self, github_project_name="duolabmeng6/qtAutoUpdateApp", callback_func=None):
+        super(ThdCheckUpdate, self).__init__()
         # 绑定线程开始事件
         self.started.connect(self.ui_开始)
         # 绑定线程结束事件
         self.finished.connect(self.ui_结束)
-        self.Github项目名称 = Github项目名称
-        self.回调函数 = 回调函数
+        self.github_project_name = github_project_name
+        self.callback_func = callback_func
 
     def run(self):
-        data = 获取最新版本号和下载地址(self.Github项目名称)
+        data = 获取最新版本号和下载地址(self.github_project_name)
         self.数据 = data
 
     def ui_开始(self):
@@ -202,4 +202,4 @@ class thd_check_update(QThread):
     def ui_结束(self):
         # data = json.dumps(self.数据, indent=4, ensure_ascii=False)
         # print("检查更新结果", data)
-        self.回调函数(self.数据)
+        self.callback_func(self.数据)

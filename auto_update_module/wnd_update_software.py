@@ -3,15 +3,13 @@ import webbrowser
 
 from PySide6.QtWidgets import QDialog
 
-from .auto_update_func import DownloadFileThreadClass, system_is_win, system_is_mac, update_self_win_app, thd_check_update, update_self_mac_app
+from .auto_update_func import DownloadFileThreadClass, system_is_win, system_is_mac, update_self_win_app, ThdCheckUpdate, update_self_mac_app
 
 from . import update_image_rc
 from . import ui_winUpdate
 
 
 class WndUpdateSoftware(QDialog):
-    allow_close = False
-
     def __init__(self, github_project_name="duolabmeng6/qtAutoUpdateApp", app_name="my_app.app", cur_version="1.0",
                  official_site="https://github.com/duolabmeng6/qtAutoUpdateApp"):
         super(WndUpdateSoftware, self).__init__()
@@ -38,37 +36,37 @@ class WndUpdateSoftware(QDialog):
         self.ui.textEdit.setReadOnly(True)
         self.ui.textEdit.setText("正在检查更新...")
 
-        self.应用名称 = app_name
-        self.当前版本号 = cur_version
-        self.官方网址 = official_site
+        self.app_name = app_name
+        self.cur_version = cur_version
+        self.official_site = official_site
         最新版本 = "查询中..."
         self.ui.label_2.setText(最新版本)
-        self.ui.label_bbh.setText(f'最新版本:{最新版本} 当前版本: {self.当前版本号}')
+        self.ui.label_bbh.setText(f'最新版本:{最新版本} 当前版本: {self.cur_version}')
         self.下载文件夹路径 = os.path.expanduser('~/Downloads')
         if system_is_mac():
-            self.压缩包路径 = os.path.abspath(self.下载文件夹路径 + f"/{self.应用名称}.zip")
+            self.压缩包路径 = os.path.abspath(self.下载文件夹路径 + f"/{self.app_name}.zip")
         if system_is_win():
-            self.压缩包路径 = os.path.abspath(self.下载文件夹路径 + f"/{self.应用名称}.exe")
+            self.压缩包路径 = os.path.abspath(self.下载文件夹路径 + f"/{self.app_name}.exe")
 
         print('查询最新版本')
-        self.检查更新线程 = thd_check_update(github_project_name, self.检查更新回到回调函数)
-        self.检查更新线程.start()
+        self.thd_check_update = ThdCheckUpdate(github_project_name, self.检查更新回到回调函数)
+        self.thd_check_update.start()
 
     def closeEvent(self, event):
-        # self.检查更新线程.quit()
-        self.hide()
-        if self.allow_close is False:
-            event.ignore()
+        self.thd_check_update.quit()
+        # self.hide()
+        # if self.allow_close is False:
+        #     event.ignore()
 
     def 检查更新回到回调函数(self, 数据):
         print("数据", 数据)
         最新版本 = 数据['版本号']
-        self.ui.label_bbh.setText(f'最新版本:{最新版本} 当前版本: {self.当前版本号}')
+        self.ui.label_bbh.setText(f'最新版本:{最新版本} 当前版本: {self.cur_version}')
         self.ui.textEdit.setHtml(数据['更新内容'])
         self.mac下载地址 = 数据['mac下载地址']
         self.win下载地址 = 数据['win下载地址']
 
-        if 最新版本 == self.当前版本号 or 最新版本 == "":
+        if 最新版本 == self.cur_version or 最新版本 == "":
             self.ui.label_2.setText("你使用的是最新版本")
             self.ui.pushButton_azgx.hide()
             self.ui.pushButton_tgbb.hide()
@@ -100,7 +98,7 @@ class WndUpdateSoftware(QDialog):
                 窗口=self,
                 编辑框=self.ui.label_zt,
                 进度条=self.ui.progressBar,
-                应用名称=self.应用名称,
+                应用名称=self.app_name,
                 回调函数=self.下载完成,
             )
             self.下载文件线程.start()
@@ -117,7 +115,7 @@ class WndUpdateSoftware(QDialog):
                 窗口=self,
                 编辑框=self.ui.label_zt,
                 进度条=self.ui.progressBar,
-                应用名称=self.应用名称,
+                应用名称=self.app_name,
                 回调函数=self.下载完成
             )
             self.下载文件线程.start()
@@ -129,7 +127,7 @@ class WndUpdateSoftware(QDialog):
         if system_is_mac():
             update_self_mac_app(
                 资源压缩包=保存地址,
-                应用名称=self.应用名称
+                应用名称=self.app_name
             )
         if system_is_win():
             exe资源文件路径 = 保存地址
@@ -137,5 +135,5 @@ class WndUpdateSoftware(QDialog):
 
     def open_official_site(self):
         # 浏览器打开网址
-        print('官方网址', self.官方网址)
-        webbrowser.open(self.官方网址)
+        print('官方网址', self.official_site)
+        webbrowser.open(self.official_site)

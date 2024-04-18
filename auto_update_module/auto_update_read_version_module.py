@@ -45,8 +45,7 @@ def 获取最新版本号和下载地址(project_name):
     # https://github.com/duolabmeng6/qtAutoUpdateApp/releases/latest
     # 镜像地址也可以自己造一个 https://quiet-boat-a038.duolabmeng.workers.dev/
     #https://github.com/duolabmeng6/qoq/releases/expanded_assets/v0.1.5
-    url = f"https://ghproxy.com/https://github.com/{project_name}/releases/latest"
-    # print(url)
+    url = f"https://mirror.ghproxy.com/https://github.com/{project_name}/releases/latest"
     jsondata = requests.get(url)
 
 
