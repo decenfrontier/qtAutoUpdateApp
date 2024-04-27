@@ -4,9 +4,7 @@
 
 适用于 pyinstaller 应用的自动更新 支持 pyqt 的应用 或者其他python应用使用
 
-如果是 pyqt5 pyqt6 请自行修改 很简单 很容易
-
-本演示程序由 Pyside6 构建
+本演示程序由 Pyside2 构建
 
 [查看自动更新的效果](https://user-images.githubusercontent.com/59047063/180640714-bc7fd160-3cb3-4b2a-af2c-8c73c7800740.mp4)
 
@@ -94,7 +92,7 @@ GithubActions 项目发布最佳实践 https://www.bilibili.com/video/BV1Ud4y1K7
 ## 1 作为子模块使用
 
 ```shell
-git submodule add https://github.com/duolabmeng6/qtAutoUpdateApp qtAutoUpdateApp
+git submodule add https://github.com/decenfroniter/qtAutoUpdateApp qtAutoUpdateApp
 ```
 
 当然直接下载本项目也是可以的
@@ -103,10 +101,10 @@ git submodule add https://github.com/duolabmeng6/qtAutoUpdateApp qtAutoUpdateApp
 import qtAutoUpdateApp.自动更新模块 as 自动更新模块
 import version
 全局变量_版本号 = version.version
-全局_项目名称 = "duolabmeng6/QtEasyDesigner"
+全局_项目名称 = "decenfroniter/QtEasyDesigner"
 全局_应用名称 = "QtEasyDesigner.app"
 全局_当前版本 = version.version
-全局_官方网址 = "https://github.com/duolabmeng6/QtEasyDesigner"
+全局_官方网址 = "https://github.com/decenfroniter/QtEasyDesigner"
 ```
 
 ## 2 检查更新的回调
@@ -251,7 +249,7 @@ template 为发布的内容 其中 `$CHANGES` 是版本之间的变更 也是通
 
 ##### 标签的配置
 
-https://github.com/duolabmeng6/learn_actions/issues/labels
+https://github.com/decenfroniter/learn_actions/issues/labels
 
 注意一点 描述的内容必须删除 否则构建时会报错 版本变更将无法生产 删除即正常
 
@@ -433,12 +431,12 @@ Sparkle 需要使用 xcode 进行版本管理 十分麻烦当然也可以使用
 
 ## Qt Easy Designer 由本人开发的开源 qt 界面设计器
 
-https://github.com/duolabmeng6/QtEsayDesigner
+https://github.com/decenfroniter/QtEsayDesigner
 
 ## pyefun python 中文功能函数库
 
-https://github.com/duolabmeng6/pyefun
+https://github.com/decenfroniter/pyefun
 
 ## qtefun python qt 中文组件函数库
 
-https://github.com/duolabmeng6/qtefun
+https://github.com/decenfroniter/qtefun

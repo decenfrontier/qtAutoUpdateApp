@@ -1,7 +1,7 @@
 import os
 import webbrowser
 
-from PySide6.QtWidgets import QDialog
+from PySide2.QtWidgets import QDialog
 
 from .auto_update_func import DownloadFileThreadClass, system_is_win, system_is_mac, update_self_win_app, ThdCheckUpdate, update_self_mac_app
 
@@ -10,13 +10,13 @@ from . import ui_winUpdate
 
 
 class WndUpdateSoftware(QDialog):
-    def __init__(self, github_project_name="duolabmeng6/qtAutoUpdateApp", app_name="my_app.app", cur_version="1.0",
-                 official_site="https://github.com/duolabmeng6/qtAutoUpdateApp"):
-        super(WndUpdateSoftware, self).__init__()
+    def __init__(self, parent=None, github_project_name="decenfrontier/qtAutoUpdateApp", app_name="xxx.app", cur_version="1.0",
+                 official_site="https://gamerobot.fun"):
+        super().__init__(parent)
         self.ui = ui_winUpdate.Ui_Form()
         self.ui.setupUi(self)
         self.setWindowTitle('软件更新')
-        self.resize(620, 380)
+        self.resize(600, 360)
 
         # 绑定按钮事件
         self.ui.pushButton_azgx.clicked.connect(self.install_update)

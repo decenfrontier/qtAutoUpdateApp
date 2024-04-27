@@ -64,5 +64,5 @@ if __name__ == "__main__":
         # 控制台当行输出
         print(f"\r {信息}", end="")
 
-    下载文件("https://github.com/duolabmeng6/QtEsayDesigner/releases/download/0.0.32/QtEsayDesigner_MacOS.zip",
+    下载文件("https://github.com/decenfroniter/QtEsayDesigner/releases/download/0.0.32/QtEsayDesigner_MacOS.zip",
             "QtEsayDesigner_MacOS.zip", 进度)

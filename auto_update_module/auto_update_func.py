@@ -4,12 +4,12 @@ import platform
 import shutil
 import sys
 
-from PySide6 import QtCore
-from PySide6.QtCore import QThread
+from PySide2 import QtCore
+from PySide2.QtCore import QThread
 
 from .zip_file_handle import zip解压2
 from .file_download_module import 下载文件
-from .auto_update_read_version_module import 获取最新版本号和下载地址
+from .auto_update_read_version_module import get_latest_version_download_url
 
 
 def system_is_win():
@@ -182,24 +182,23 @@ class DownloadFileThreadClass(QThread):
 
 
 class ThdCheckUpdate(QThread):
-    def __init__(self, github_project_name="duolabmeng6/qtAutoUpdateApp", callback_func=None):
+    def __init__(self, github_project_name="decenfroniter/qtAutoUpdateApp", callback_func=None):
         super(ThdCheckUpdate, self).__init__()
         # 绑定线程开始事件
-        self.started.connect(self.ui_开始)
+        self.started.connect(self.ui_start)
         # 绑定线程结束事件
-        self.finished.connect(self.ui_结束)
+        self.finished.connect(self.ui_end)
         self.github_project_name = github_project_name
         self.callback_func = callback_func
 
     def run(self):
-        data = 获取最新版本号和下载地址(self.github_project_name)
-        self.数据 = data
+        data = get_latest_version_download_url(self.github_project_name)
+        self.data = data
 
-    def ui_开始(self):
-        pass
-        # print("开始检查更新")
+    def ui_start(self):
+        print("开始检查更新")
 
-    def ui_结束(self):
+    def ui_end(self):
         # data = json.dumps(self.数据, indent=4, ensure_ascii=False)
         # print("检查更新结果", data)
-        self.callback_func(self.数据)
+        self.callback_func(self.data)

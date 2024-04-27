@@ -1,15 +1,15 @@
 import json
 import sys
 
-from PySide6.QtWidgets import QWidget, QLabel, QTextEdit, QVBoxLayout, QApplication, QMainWindow, QPushButton
+from PySide2.QtWidgets import QWidget, QLabel, QTextEdit, QVBoxLayout, QApplication, QMainWindow, QPushButton
 
 import version
 import auto_update_module
 
-PROJECT_NAME = "duolabmeng6/qtAutoUpdateApp"
+PROJECT_NAME = "decenfroniter/qtAutoUpdateApp"
 APP_NAME = "my_app.app"
 CUR_VERSION = version.version
-OFFICIAL_SITE = "https://github.com/duolabmeng6/qtAutoUpdateApp"
+OFFICIAL_SITE = "https://github.com/decenfroniter/qtAutoUpdateApp"
 
 
 class Main(QMainWindow):
