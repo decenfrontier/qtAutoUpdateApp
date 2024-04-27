@@ -17,7 +17,7 @@ class Main(QMainWindow):
         super(Main, self).__init__()
         self.init_ui()
 
-    def 按钮_检查更新点击(self):
+    def on_btn_check_update_click(self):
         # 弹出窗口
         self.winUpdate = auto_update_module.WndUpdateSoftware(github_project_name=PROJECT_NAME,
                                                               app_name=APP_NAME,
@@ -33,7 +33,7 @@ class Main(QMainWindow):
         self.main_widget = QWidget()
 
         self.btn_check_update = QPushButton(self.main_widget)
-        self.btn_check_update.clicked.connect(self.按钮_检查更新点击)
+        self.btn_check_update.clicked.connect(self.on_btn_check_update_click)
         self.btn_check_update.resize(160, 100)
         self.btn_check_update.setText(f'检查更新')
         self.btn_check_update.show()

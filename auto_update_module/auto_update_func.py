@@ -184,21 +184,10 @@ class DownloadFileThreadClass(QThread):
 class ThdCheckUpdate(QThread):
     def __init__(self, github_project_name="decenfroniter/qtAutoUpdateApp", callback_func=None):
         super(ThdCheckUpdate, self).__init__()
-        # 绑定线程开始事件
-        self.started.connect(self.ui_start)
-        # 绑定线程结束事件
-        self.finished.connect(self.ui_end)
         self.github_project_name = github_project_name
         self.callback_func = callback_func
 
     def run(self):
-        data = get_latest_version_download_url(self.github_project_name)
-        self.data = data
-
-    def ui_start(self):
         print("开始检查更新")
-
-    def ui_end(self):
-        # data = json.dumps(self.数据, indent=4, ensure_ascii=False)
-        # print("检查更新结果", data)
-        self.callback_func(self.data)
+        data = get_latest_version_download_url(self.github_project_name)
+        self.callback_func(data)
