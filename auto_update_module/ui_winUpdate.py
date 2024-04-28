@@ -12,7 +12,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-import qtAutoUpdateApp.auto_update_module.update_image_rc as update_image_rc
+import update_image_rc
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -50,6 +50,7 @@ class Ui_Form(object):
         font = QFont()
         font.setPointSize(16)
         font.setBold(True)
+        font.setWeight(75)
         self.label_2.setFont(font)
 
         self.verticalLayout.addWidget(self.label_2)
@@ -67,6 +68,7 @@ class Ui_Form(object):
         font2 = QFont()
         font2.setPointSize(14)
         font2.setBold(True)
+        font2.setWeight(75)
         self.label_3.setFont(font2)
 
         self.verticalLayout.addWidget(self.label_3)
@@ -98,11 +100,6 @@ class Ui_Form(object):
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
-
-        self.pushButton_gfwz = QPushButton(Form)
-        self.pushButton_gfwz.setObjectName(u"pushButton_gfwz")
-
-        self.horizontalLayout.addWidget(self.pushButton_gfwz)
 
         self.pushButton_azgx = QPushButton(Form)
         self.pushButton_azgx.setObjectName(u"pushButton_azgx")
@@ -142,7 +139,6 @@ class Ui_Form(object):
         self.label_3.setText(QCoreApplication.translate("Form", u"\u7248\u672c\u63cf\u8ff0", None))
         self.label_zt.setText(QCoreApplication.translate("Form", u"\u6587\u4ef6\u5927\u5c0f \u4e0b\u8f7d\u901f\u5ea6 \u5269\u4f59\u65f6\u95f4", None))
         self.pushButton_tgbb.setText(QCoreApplication.translate("Form", u"\u8df3\u8fc7\u7248\u672c", None))
-        self.pushButton_gfwz.setText(QCoreApplication.translate("Form", u"\u5b98\u65b9\u7f51\u5740", None))
         self.pushButton_azgx.setText(QCoreApplication.translate("Form", u"\u5b89\u88c5\u66f4\u65b0", None))
         self.pushButton_ok.setText(QCoreApplication.translate("Form", u"\u786e\u5b9a", None))
     # retranslateUi

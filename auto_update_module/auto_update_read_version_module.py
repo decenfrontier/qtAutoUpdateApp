@@ -44,8 +44,8 @@ def get_resp_info(resp, project_name):
     #
     #             </a>
     download_url_list = []
-    mac_download_url = ""
-    win_download_url = ""
+    patcher_download_url = ""
+    installer_download_url = ""
     # https://github.com/decenfroniter/qoq/releases/expanded_assets/v0.1.5
     url = f"https://ghproxy.com/https://github.com/{project_name}/releases/expanded_assets/{version}"
     expanded_assets_url_resp = requests.get(url).text
@@ -59,10 +59,10 @@ def get_resp_info(resp, project_name):
         if item.find('Source code') != -1:  # 跳过源代码
             continue
         download_url_list.append({item: download_url})
-        if item.find('MacOS.zip') != -1:
-            mac_download_url = download_url
-        if item.find('.exe') != -1:
-            win_download_url = download_url
+        if item.find('patcher') != -1:
+            patcher_download_url = download_url
+        if item.find('installer') != -1:
+            installer_download_url = download_url
     print(download_url_list)
 
     # 获取发布时间
@@ -80,12 +80,12 @@ def get_resp_info(resp, project_name):
         update_content = ""
 
     return {
-        "版本号": version,
-        "下载地址列表": download_url_list,
-        "更新内容": update_content,
-        "发布时间": release_time,
-        "mac下载地址": mac_download_url,
-        "win下载地址": win_download_url,
+        "version": version,
+        "download_url_list": download_url_list,
+        "update_content": update_content,
+        "release_time": release_time,
+        "patcher_download_url": patcher_download_url,
+        "installer_download_url": installer_download_url,
     }
 
 

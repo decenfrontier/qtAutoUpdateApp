@@ -63,6 +63,7 @@
        <property name="font">
         <font>
          <pointsize>16</pointsize>
+         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -88,6 +89,7 @@
        <property name="font">
         <font>
          <pointsize>14</pointsize>
+         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -137,13 +139,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_gfwz">
-         <property name="text">
-          <string>官方网址</string>
-         </property>
-        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_azgx">
