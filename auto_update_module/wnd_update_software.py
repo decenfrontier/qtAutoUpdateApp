@@ -90,7 +90,7 @@ class WndUpdateSoftware(QDialog):
             process_bar=self.ui.progressBar,
             app_name=self.app_name,
         )
-        self.thd_download_file.connect(self.on_download_file_finish)
+        self.thd_download_file.sig_download_finish.connect(self.on_download_file_finish)
         self.thd_download_file.start()
 
     def on_download_file_finish(self, download_result, save_path):
