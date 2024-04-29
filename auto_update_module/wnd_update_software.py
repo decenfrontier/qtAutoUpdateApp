@@ -141,9 +141,9 @@ class ThdCheckUpdate(QThread):
             timeout=2,
             verify=False
         )
-        print(response.text)
-        json_resp = response.json() or {}
-        return json_resp
+        if response.status_code != 200:
+            return {}
+        return response.json()
 
 
 class ThdDownloadFile(QThread):
