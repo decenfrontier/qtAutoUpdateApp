@@ -8,11 +8,15 @@ def get_latest_version_download_url(project_name, token=""):
     # https://github.com/decenfroniter/qtAutoUpdateApp/releases/latest
     # 镜像地址也可以自己造一个 https://quiet-boat-a038.duolabmeng.workers.dev/
     #https://github.com/decenfroniter/qoq/releases/expanded_assets/v0.1.5
-    if token:
-        url = f"https://user:{token}@mirror.ghproxy.com/https://github.com/{project_name}/releases/latest"
-    else:
-        url = f"https://mirror.ghproxy.com/https://github.com/{project_name}/releases/latest"
-    jsondata = requests.get(url)
+    # if token:
+    #     url = f"https://decenfroniter:{token}@mirror.ghproxy.com/https://github.com/{project_name}/releases/latest"
+    # else:
+    #     url = f"https://mirror.ghproxy.com/https://github.com/{project_name}/releases/latest"
+    # jsondata = requests.get(url)
+    url = f"https://github.com/{project_name}/releases/latest"
+    headers = {'Authorization': f'token {token}', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'}
+    jsondata = requests.get(url, headers=headers)
+    print(f"url: {url}, headers: {headers}, resp: {jsondata.text}")
     return get_resp_info(jsondata.text, project_name)
 
 
@@ -23,7 +27,6 @@ def get_resp_info(resp, project_name):
     version = resp.find('<span class="ml-1">')
     version = resp[version + len('<span class="ml-1">'):]
     version = version[:version.find('</span>')].strip()
-    print(version)
 
     # 获取更新内容
     # <div data-pjax="true" data-test-selector="body-content" data-view-component="true" class="markdown-body my-3"><h1>自动更新程序</h1>
@@ -39,7 +42,6 @@ def get_resp_info(resp, project_name):
     update_content = resp[update_content + len(
         '<div data-pjax="true" data-test-selector="body-content" data-view-component="true" class="markdown-body my-3">'):]
     update_content = update_content[:update_content.find('</div>')]
-    print(update_content)
 
     # 获取下载地址列表
     #             <a href="/decenfroniter/qtAutoUpdateApp/releases/download/0.0.4/my_app_MacOS.zip" rel="nofollow" data-skip-pjax>
@@ -61,12 +63,10 @@ def get_resp_info(resp, project_name):
         download_url = f"https://ghproxy.com/https://github.com/{project_name}/releases/download/{version}/{item}"
         if item.find('Source code') != -1:  # 跳过源代码
             continue
-        download_url_list.append({item: download_url})
         if item.find('patcher') != -1:
             patcher_download_url = download_url
         if item.find('installer') != -1:
             installer_download_url = download_url
-    print(download_url_list)
 
     # 获取发布时间
     # <relative-time datetime="2022-07-22T17:32:41Z" class="no-wrap"></relative-time>
@@ -84,7 +84,6 @@ def get_resp_info(resp, project_name):
 
     return {
         "version": version,
-        "download_url_list": download_url_list,
         "update_content": update_content,
         "release_time": release_time,
         "patcher_download_url": patcher_download_url,
@@ -95,9 +94,6 @@ def get_resp_info(resp, project_name):
 # 测试
 if __name__ == '__main__':
     # data = get_latest_version_download_url("InkTimeRecord/TTime")  # 开源
-    data = get_latest_version_download_url("decenfroniter/yt", token='')  # 私有
+    data = get_latest_version_download_url("decenfrontier/yt", token='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')  # 私有
     print(data)
-    # data = 解析网页信息("")
-    # print(data)
-    # data = 获取最新版本号和下载地址("decenfroniter/qtAutoUpdateApp")
-    # print(data)
+
