@@ -7,7 +7,6 @@ import zipfile
 
 import requests
 
-from qtAutoUpdateApp.auto_update_module.auto_update_read_version_module import get_latest_version_download_url
 from qtAutoUpdateApp.auto_update_module.file_download_module import download_file
 import utils
 from . import update_image_rc
