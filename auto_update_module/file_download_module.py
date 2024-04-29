@@ -4,10 +4,6 @@ import time
 
 
 def download_file(url, save_path, callback_func=None):
-    # 回调函数例子
-    #     def 进度(进度百分比, 已下载大小, 文件大小, 下载速率, 剩余时间):
-    #         信息 = f"进度 {进度百分比}% 已下载 {已下载大小}MB 文件大小 {文件大小}MB 下载速率 {下载速率}MB 剩余时间 {剩余时间}秒"
-    #         print(f"\r {信息}", end="")
     if callback_func:
         start_time = time.time()
     r = requests.get(url, stream=True)

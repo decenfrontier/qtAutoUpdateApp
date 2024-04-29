@@ -5,6 +5,8 @@ from PySide2.QtCore import QThread, Signal
 from PySide2.QtWidgets import QDialog
 import zipfile
 
+import requests
+
 from qtAutoUpdateApp.auto_update_module.auto_update_read_version_module import get_latest_version_download_url
 from qtAutoUpdateApp.auto_update_module.file_download_module import download_file
 import utils
@@ -57,11 +59,11 @@ class WndUpdateSoftware(QDialog):
     def closeEvent(self, event):
         self.thd_check_update.quit()
 
-    def on_get_download_info(self, data):
-        latest_version = data['version']
+    def on_get_download_info(self, data: dict):
+        latest_version = data.get('latest_version')
         self.ui.label_bbh.setText(f'最新版本:{latest_version} 当前版本: {self.cur_version}')
-        self.ui.textEdit.setHtml(data['update_content'])
-        self.patcher_download_url = data['patcher_download_url']
+        self.ui.textEdit.setHtml(data.get('update_info'))
+        self.patcher_download_url = data.get('patcher_download_url')
 
         if latest_version == self.cur_version or latest_version == "":
             self.ui.label_2.setText("你使用的是最新版本")
@@ -118,15 +120,33 @@ class WndUpdateSoftware(QDialog):
 class ThdCheckUpdate(QThread):
     # 检查更新线程
     sig_get_download_info_finish = Signal(dict)  # 定义信号在线程类中
-    def __init__(self, github_project_name="decenfroniter/qtAutoUpdateApp"):
+    def __init__(self):
         super().__init__()
-        self.github_project_name = github_project_name
+
 
     def run(self):
         print("开始检查更新")
-        data = get_latest_version_download_url(self.github_project_name)
+        data = self.send_request_get_update_info()
+        # 收到更新数据后通知updater窗口
         self.sig_get_download_info_finish.emit(data)
-        # self.callback_func(data)  # 这里不能回调, 用别的线程更新页面数据会报错
+
+    def send_request_get_update_info(self):
+        path = '/api/netauth/v1/get_update_info'
+        req_ts = str(settings.cur_time_stamp)
+        body = {
+            'card_number': settings.card_number,
+            'machine_code': settings.machine_code,
+            'client_version': json.dumps(settings.user_info),
+        }
+        url = settings.protocal + settings.server_host_name + path
+        response = requests.post(
+            url, 
+            json=body, 
+            timeout=2,
+            verify=False
+        )
+        json_resp = response.json() or {}
+        return json_resp
 
 
 class ThdDownloadFile(QThread):
