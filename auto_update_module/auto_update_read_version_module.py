@@ -3,12 +3,15 @@ import re
 import requests
 
 
-def get_latest_version_download_url(project_name):
+def get_latest_version_download_url(project_name, token=""):
     # 通过访问最新的页面 获取版本号和下载地址和更新内容
     # https://github.com/decenfroniter/qtAutoUpdateApp/releases/latest
     # 镜像地址也可以自己造一个 https://quiet-boat-a038.duolabmeng.workers.dev/
     #https://github.com/decenfroniter/qoq/releases/expanded_assets/v0.1.5
-    url = f"https://mirror.ghproxy.com/https://github.com/{project_name}/releases/latest"
+    if token:
+        url = f"https://user:{token}@mirror.ghproxy.com/https://github.com/{project_name}/releases/latest"
+    else:
+        url = f"https://mirror.ghproxy.com/https://github.com/{project_name}/releases/latest"
     jsondata = requests.get(url)
     return get_resp_info(jsondata.text, project_name)
 
@@ -91,7 +94,8 @@ def get_resp_info(resp, project_name):
 
 # 测试
 if __name__ == '__main__':
-    data = get_latest_version_download_url("decenfroniter/yt")
+    # data = get_latest_version_download_url("InkTimeRecord/TTime")  # 开源
+    data = get_latest_version_download_url("decenfroniter/yt", token='')  # 私有
     print(data)
     # data = 解析网页信息("")
     # print(data)
