@@ -16,7 +16,7 @@ from utils import *
 
 class WndUpdateSoftware(QDialog):
     sig_update_finish_restart = Signal()
-    def __init__(self, parent=None, github_project_name="decenfrontier/qtAutoUpdateApp", app_name="xxx.app", cur_version="1.0",
+    def __init__(self, parent=None, app_name="xxx", cur_version="1.0",
                  official_site="https://gamerobot.fun"):
         super().__init__(parent)
         self.ui = ui_winUpdate.Ui_Form()
@@ -30,7 +30,7 @@ class WndUpdateSoftware(QDialog):
         self.ui.pushButton_ok.clicked.connect(self.close)
 
         # 连接自定义信号槽
-        self.thd_check_update = ThdCheckUpdate(github_project_name)
+        self.thd_check_update = ThdCheckUpdate()
         self.thd_check_update.sig_get_download_info_finish.connect(lambda data:self.on_get_download_info(data))
 
         # 隐藏更新进度条和状态编辑框
@@ -119,9 +119,6 @@ class WndUpdateSoftware(QDialog):
 class ThdCheckUpdate(QThread):
     # 检查更新线程
     sig_get_download_info_finish = Signal(dict)  # 定义信号在线程类中
-    def __init__(self):
-        super().__init__()
-
 
     def run(self):
         print("开始检查更新")
@@ -144,6 +141,7 @@ class ThdCheckUpdate(QThread):
             timeout=2,
             verify=False
         )
+        print(response.text)
         json_resp = response.json() or {}
         return json_resp
 

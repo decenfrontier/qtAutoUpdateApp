@@ -12,7 +12,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-import update_image_rc
+import qtAutoUpdateApp.auto_update_module.update_image_rc as update_image_rc
 
 class Ui_Form(object):
     def setupUi(self, Form):

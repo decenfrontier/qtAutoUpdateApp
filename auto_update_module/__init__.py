@@ -6,5 +6,4 @@
 #     sys.path.append(编译后路径)
 # except Exception:
 #     pass
-from .auto_update_func import *
 from .wnd_update_software import *
