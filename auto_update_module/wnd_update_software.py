@@ -1,56 +1,55 @@
 import os
 import shutil
 
-from PySide2.QtCore import QThread, Signal
+from PySide2.QtCore import QObject, QThread, Signal
 from PySide2.QtWidgets import QDialog
 import zipfile
 
 import requests
 
 from qtAutoUpdateApp.auto_update_module.file_download_module import download_file
-import utils
 from . import update_image_rc
-from . import ui_winUpdate
-from utils import *
+from .ui_winUpdate import Ui_Form
+from .process import run_exe
 
 
-class WndUpdateSoftware(QDialog):
+class WndUpdateSoftware(QDialog, Ui_Form):
     sig_update_finish_restart = Signal()
-    def __init__(self, parent=None, app_name="xxx", cur_version="1.0",
-                 official_site="https://gamerobot.fun"):
+    def __init__(self, parent=None, client_version="v0.1.0", get_update_info_req={}, protocal='https://', server_host_name=''):
         super().__init__(parent)
-        self.ui = ui_winUpdate.Ui_Form()
-        self.ui.setupUi(self)
+        self.setupUi(self)
         self.setWindowTitle('软件更新')
         self.resize(600, 360)
 
+        self.get_update_info_req = get_update_info_req
+        self.protocal = protocal
+        self.server_host_name = server_host_name
+
         # 绑定按钮事件
-        self.ui.pushButton_azgx.clicked.connect(self.install_update)
-        self.ui.pushButton_tgbb.clicked.connect(self.close)
-        self.ui.pushButton_ok.clicked.connect(self.close)
+        self.pushButton_azgx.clicked.connect(self.install_update)
+        self.pushButton_tgbb.clicked.connect(self.close)
+        self.pushButton_ok.clicked.connect(self.close)
 
         # 连接自定义信号槽
-        self.thd_check_update = ThdCheckUpdate()
+        self.thd_check_update = ThdCheckUpdate(self.get_update_info_req, protocal, server_host_name)
         self.thd_check_update.sig_get_download_info_finish.connect(lambda data:self.on_get_download_info(data))
 
         # 隐藏更新进度条和状态编辑框
-        self.ui.progressBar.hide()
-        self.ui.progressBar.setValue(0)
-        self.ui.progressBar.setRange(0, 100)
-        self.ui.label_zt.hide()
-        self.ui.pushButton_ok.hide()
-        self.ui.pushButton_azgx.setEnabled(False)
-        self.ui.pushButton_tgbb.setEnabled(False)
+        self.progressBar.hide()
+        self.progressBar.setValue(0)
+        self.progressBar.setRange(0, 100)
+        self.label_zt.hide()
+        self.pushButton_ok.hide()
+        self.pushButton_azgx.setEnabled(False)
+        self.pushButton_tgbb.setEnabled(False)
         # textEdit 禁止编辑
-        self.ui.textEdit.setReadOnly(True)
-        self.ui.textEdit.setText("正在检查更新...")
+        self.textEdit.setReadOnly(True)
+        self.textEdit.setText("正在检查更新...")
 
-        self.app_name = app_name
-        self.cur_version = cur_version
-        self.official_site = official_site
+        self.client_version = client_version
         latest_version = "查询中..."
-        self.ui.label_2.setText(latest_version)
-        self.ui.label_bbh.setText(f'最新版本:{latest_version} 当前版本: {self.cur_version}')
+        self.label_2.setText(latest_version)
+        self.label_bbh.setText(f'最新版本:{latest_version} 当前版本: {self.client_version}')
         self.download_path = "."
         self.patcher_path = "./patcher.zip"
         self.thd_check_update.start()
@@ -60,65 +59,70 @@ class WndUpdateSoftware(QDialog):
 
     def on_get_download_info(self, data: dict):
         latest_version = data.get('latest_version', '')
-        self.ui.label_bbh.setText(f'最新版本:{latest_version} 当前版本: {self.cur_version}')
-        self.ui.textEdit.setPlainText(data.get('update_info'))
+        self.label_bbh.setText(f'最新版本:{latest_version} 当前版本: {self.client_version}')
+        self.textEdit.setMarkdown(data.get('update_info'))
         self.patcher_download_url = data.get('patcher_download_url')
 
-        if latest_version == self.cur_version or latest_version == '':
-            self.ui.label_2.setText("你使用的是最新版本")
-            self.ui.pushButton_azgx.hide()
-            self.ui.pushButton_tgbb.hide()
-            self.ui.pushButton_ok.show()
+        if latest_version == self.client_version or latest_version == '':
+            self.label_2.setText("你使用的是最新版本")
+            self.pushButton_azgx.hide()
+            self.pushButton_tgbb.hide()
+            self.pushButton_ok.show()
             return
 
-        self.ui.pushButton_azgx.setEnabled(True)
-        self.ui.pushButton_tgbb.setEnabled(True)
-        self.ui.label_2.setText("发现新版本")
+        self.pushButton_azgx.setEnabled(True)
+        self.pushButton_tgbb.setEnabled(True)
+        self.label_2.setText("发现新版本")
 
     def install_update(self):
         print('安装更新')
-        self.ui.progressBar.show()
-        self.ui.label_zt.show()
-        self.ui.label_zt.setText('更新中...')
-        self.ui.pushButton_azgx.setEnabled(False)
-        self.ui.pushButton_tgbb.setEnabled(False)
+        self.progressBar.show()
+        self.label_zt.show()
+        self.label_zt.setText('更新中...')
+        self.pushButton_azgx.setEnabled(False)
+        self.pushButton_tgbb.setEnabled(False)
 
         self.thd_download_file = ThdDownloadFile(
             download_url=self.patcher_download_url,
             save_path=self.patcher_path,
             wnd=self,
-            edt=self.ui.label_zt,
-            process_bar=self.ui.progressBar,
-            app_name=self.app_name,
+            edt=self.label_zt,
+            process_bar=self.progressBar,
         )
         self.thd_download_file.sig_download_finish.connect(self.on_download_file_finish)
         self.thd_download_file.start()
 
     def on_download_file_finish(self, download_result, save_path):
         if not download_result:
-            self.ui.label_zt.setText("下载更新失败")
+            self.label_zt.setText("下载更新失败")
             return
         patcher_zip_path = save_path
         extract_folder_path = "./patcher"
-        log.info("正在创建解压目录...")
+        print("正在创建解压目录...")
         # 如果存在的话先删除, 再创建新的patcher文件夹用于解压
         if os.path.exists(extract_folder_path):
             shutil.rmtree(extract_folder_path)
         os.makedirs(extract_folder_path)
         with zipfile.ZipFile(patcher_zip_path, 'r') as zf:
             zf.extractall(extract_folder_path)
-        log.info("解压完成")
-        log.info("1 关闭update窗口")
+        print("解压完成")
+        print("1 关闭update窗口")
         self.close()
-        log.info("2 启动launcher")
-        utils.run_exe("./launcher.exe")
-        log.info("3 关闭main窗口")
+        print("2 启动launcher")
+        run_exe("./launcher.exe")
+        print("3 关闭main窗口")
         self.sig_update_finish_restart.emit()
 
 
 class ThdCheckUpdate(QThread):
     # 检查更新线程
     sig_get_download_info_finish = Signal(dict)  # 定义信号在线程类中
+
+    def __init__(self, get_update_info_req, protocal, server_host_name) -> None:
+        super().__init__()
+        self.get_update_info_req = get_update_info_req
+        self.protocal = protocal
+        self.server_host_name = server_host_name
 
     def run(self):
         print("开始检查更新")
@@ -128,12 +132,8 @@ class ThdCheckUpdate(QThread):
 
     def send_request_get_update_info(self):
         path = '/api/netauth/v1/get_update_info'
-        body = {
-            'card_number': settings.card_number,
-            'machine_code': settings.machine_code,
-            'client_version': CLIENT_VERSION,
-        }
-        url = settings.protocal + settings.server_host_name + path
+        body = self.get_update_info_req
+        url = self.protocal + self.server_host_name + path
         response = requests.post(
             url, 
             json=body, 
@@ -148,7 +148,7 @@ class ThdCheckUpdate(QThread):
 class ThdDownloadFile(QThread):
     # 下载文件线程
     sig_refresh_process_bar = Signal(int, str)  # 进度 提示文本
-    sig_download_finish = Signal(str, str)
+    sig_download_finish = Signal(bool, str)
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -157,7 +157,6 @@ class ThdDownloadFile(QThread):
         self.save_path = kwargs.get('save_path')
         self.edt = kwargs.get('edt')
         self.process_bar = kwargs.get('process_bar')
-        self.app_name = kwargs.get('app_name')
         self.sig_refresh_process_bar.connect(self.refresh_ui)
 
     def run(self):
@@ -173,7 +172,8 @@ class ThdDownloadFile(QThread):
         try:
             download_file(self.download_url, self.save_path, callback)
             self.download_result = True
-        except:
+        except Exception as e:
+            print(f"下载文件异常: {e}")
             self.download_result = False
 
         print("下载结果:", self.download_result)

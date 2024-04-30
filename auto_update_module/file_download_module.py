@@ -6,7 +6,8 @@ import time
 def download_file(url, save_path, callback_func=None):
     if callback_func:
         start_time = time.time()
-    r = requests.get(url, stream=True)
+    print('开始下载:', url)
+    r = requests.get(url, stream=True, verify=False)
     with open(save_path, 'wb') as f:
         total_length = int(r.headers.get('content-length'))
         # 获取百分比 并调用回调函数
@@ -30,15 +31,3 @@ def download_file(url, save_path, callback_func=None):
                     进度百分比 = round(进度百分比, 2)
                     callback_func(进度百分比, 已下载大小, 文件大小MB, 下载速率MB, 剩余时间)
     return True
-
-
-
-if __name__ == "__main__":
-    # 下载一个大一点的文件
-    def 进度(进度百分比, 已下载大小, 文件大小, 下载速率, 剩余时间):
-        信息 = f"进度 {进度百分比}% 已下载 {已下载大小}MB 文件大小 {文件大小}MB 下载速率 {下载速率}MB 剩余时间 {剩余时间}秒"
-        # 控制台当行输出
-        print(f"\r {信息}", end="")
-
-    download_file("https://github.com/decenfroniter/QtEsayDesigner/releases/download/0.0.32/QtEsayDesigner_MacOS.zip",
-            "QtEsayDesigner_MacOS.zip", 进度)
