@@ -59,12 +59,12 @@ class WndUpdateSoftware(QDialog):
         self.thd_check_update.quit()
 
     def on_get_download_info(self, data: dict):
-        latest_version = data.get('latest_version')
+        latest_version = data.get('latest_version', '')
         self.ui.label_bbh.setText(f'最新版本:{latest_version} 当前版本: {self.cur_version}')
         self.ui.textEdit.setHtml(data.get('update_info'))
         self.patcher_download_url = data.get('patcher_download_url')
 
-        if latest_version == self.cur_version or latest_version == "":
+        if latest_version == self.cur_version or latest_version == '':
             self.ui.label_2.setText("你使用的是最新版本")
             self.ui.pushButton_azgx.hide()
             self.ui.pushButton_tgbb.hide()
@@ -128,11 +128,10 @@ class ThdCheckUpdate(QThread):
 
     def send_request_get_update_info(self):
         path = '/api/netauth/v1/get_update_info'
-        req_ts = str(settings.cur_time_stamp)
         body = {
             'card_number': settings.card_number,
             'machine_code': settings.machine_code,
-            'client_version': json.dumps(settings.user_info),
+            'client_version': CLIENT_VERSION,
         }
         url = settings.protocal + settings.server_host_name + path
         response = requests.post(
