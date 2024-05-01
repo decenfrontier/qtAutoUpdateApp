@@ -14,7 +14,7 @@ from .process import run_exe
 
 
 class WndUpdateSoftware(QDialog, Ui_Form):
-    sig_update_finish_restart = Signal()
+    sig_update_finish_restart = Signal()  # 更新完成重启
     def __init__(self, parent=None, client_version="v0.1.0", get_update_info_req={}, protocal='https://', server_host_name=''):
         super().__init__(parent)
         self.setupUi(self)
@@ -112,6 +112,7 @@ class WndUpdateSoftware(QDialog, Ui_Form):
         self.sig_update_finish_restart.emit()
         print("3 启动launcher")
         run_exe("./launcher.exe")
+        print("4 重启")
 
 
 class ThdCheckUpdate(QThread):
