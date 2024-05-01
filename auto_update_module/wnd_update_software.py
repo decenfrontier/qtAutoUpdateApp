@@ -108,10 +108,10 @@ class WndUpdateSoftware(QDialog, Ui_Form):
         print("解压完成")
         print("1 关闭update窗口")
         self.close()
-        print("2 启动launcher")
-        run_exe("./launcher.exe")
-        print("3 关闭main窗口")
+        print("2 关闭main窗口")
         self.sig_update_finish_restart.emit()
+        print("3 启动launcher")
+        run_exe("./launcher.exe")
 
 
 class ThdCheckUpdate(QThread):
