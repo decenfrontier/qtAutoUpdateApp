@@ -8,6 +8,7 @@ import zipfile
 import requests
 
 from qtAutoUpdateApp.auto_update_module.file_download_module import download_file
+from utils.msg_box import TimeMsgBox
 from . import update_image_rc
 from .ui_winUpdate import Ui_Form
 from .process import run_exe
@@ -106,13 +107,8 @@ class WndUpdateSoftware(QDialog, Ui_Form):
         with zipfile.ZipFile(patcher_zip_path, 'r') as zf:
             zf.extractall(extract_folder_path)
         print("解压完成")
-        print("1 关闭update窗口")
-        self.close()
-        print("2 关闭main窗口")
-        self.sig_update_finish_restart.emit()
-        print("3 启动launcher")
-        run_exe("./launcher.exe")
-        print("4 重启")
+        msg_box = TimeMsgBox("提示", "更新准备就绪, 请关闭软件后手动重启", parent=self)
+        msg_box.exec_()
 
 
 class ThdCheckUpdate(QThread):
