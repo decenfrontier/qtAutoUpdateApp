@@ -13,9 +13,11 @@ class PROCESS_INFORMATION(ctypes.Structure):
         ("dwThreadId", wintypes.DWORD)
     ]
 
-def run_exe(exe_name):
+def run_exe(exe_name, is_activate=False):
     start_info = ctypes.create_string_buffer(68)
-    start_info.dwFlags = 0x00000080  # STARTF_FORCEOFFFEEDBACK
+    if not is_activate:  
+        # 新创建的进程不会自动激活, 抢占焦点
+        start_info.dwFlags = 0x00000080  # STARTF_FORCEOFFFEEDBACK
     
     process_info = PROCESS_INFORMATION()
     
