@@ -61,7 +61,7 @@ class WndUpdateSoftware(QDialog, Ui_Form):
     def on_get_download_info(self, data: dict):
         latest_version = data.get('latest_version', '')
         self.label_bbh.setText(f'最新版本:{latest_version} 当前版本: {self.client_version}')
-        self.textEdit.setMarkdown(data.get('update_info'))
+        self.textEdit.setPlainText(data.get('update_info'))
         self.patcher_download_url = data.get('patcher_download_url')
 
         if latest_version == self.client_version or latest_version == '':
