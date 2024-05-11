@@ -52,7 +52,7 @@ class WndUpdateSoftware(QDialog, Ui_Form):
         self.label_2.setText(latest_version)
         self.label_bbh.setText(f'最新版本:{latest_version} 当前版本: {self.client_version}')
         self.download_path = "."
-        self.patcher_path = "./patcher.zip"
+        self.patcher_path = "patcher.zip"
         self.thd_check_update.start()
 
     def closeEvent(self, event):
@@ -104,8 +104,10 @@ class WndUpdateSoftware(QDialog, Ui_Form):
         if os.path.exists(extract_folder_path):
             shutil.rmtree(extract_folder_path)
         os.makedirs(extract_folder_path)
-        with zipfile.ZipFile(patcher_zip_path, 'r') as zf:
-            zf.extractall(extract_folder_path)
+        print(f"patcher_zip_path: {patcher_zip_path}, extract_folder_path:{extract_folder_path}")
+        # with zipfile.ZipFile(patcher_zip_path, 'r') as zf:
+        #     zf.extractall(extract_folder_path)
+        shutil.unpack_archive(patcher_zip_path, extract_folder_path)
         print("解压完成")
         msg_box = TimeMsgBox("提示", "更新准备就绪, 请关闭软件后手动重启", parent=self)
         msg_box.exec_()
