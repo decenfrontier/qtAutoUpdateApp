@@ -1,11 +1,8 @@
 import os
 import shutil
 
-from PySide2.QtCore import QObject, QThread, Signal
+from PySide2.QtCore import  QThread, Signal
 from PySide2.QtWidgets import QDialog
-import zipfile
-
-import requests
 
 from qtAutoUpdateApp.auto_update_module.file_download_module import download_file
 from utils.msg_box import TimeMsgBox
@@ -22,18 +19,10 @@ class WndUpdateSoftware(QDialog, Ui_Form):
         self.setWindowTitle('软件更新')
         self.resize(600, 360)
 
-        self.get_update_info_req = get_update_info_req
-        self.protocal = protocal
-        self.server_host_name = server_host_name
-
         # 绑定按钮事件
         self.pushButton_azgx.clicked.connect(self.install_update)
         self.pushButton_tgbb.clicked.connect(self.close)
         self.pushButton_ok.clicked.connect(self.close)
-
-        # 连接自定义信号槽
-        self.thd_check_update = ThdCheckUpdate(self.get_update_info_req, protocal, server_host_name)
-        self.thd_check_update.sig_get_download_info_finish.connect(lambda data:self.on_get_download_info(data))
 
         # 隐藏更新进度条和状态编辑框
         self.progressBar.hide()
@@ -51,14 +40,8 @@ class WndUpdateSoftware(QDialog, Ui_Form):
         latest_version = "查询中..."
         self.label_2.setText(latest_version)
         self.label_bbh.setText(f'最新版本:{latest_version} 当前版本: {self.client_version}')
-        self.download_path = "."
-        self.patcher_path = "patcher.zip"
-        self.thd_check_update.start()
 
-    def closeEvent(self, event):
-        self.thd_check_update.quit()
-
-    def on_get_download_info(self, data: dict):
+    def on_resp_update(self, data: dict):
         latest_version = data.get('latest_version', '')
         self.label_bbh.setText(f'最新版本:{latest_version} 当前版本: {self.client_version}')
         self.textEdit.setPlainText(data.get('update_info'))
@@ -74,6 +57,7 @@ class WndUpdateSoftware(QDialog, Ui_Form):
         self.pushButton_azgx.setEnabled(True)
         self.pushButton_tgbb.setEnabled(True)
         self.label_2.setText("发现新版本")
+        self.show()  # 发现新版本 必须show
 
     def install_update(self):
         print('安装更新')
@@ -97,6 +81,7 @@ class WndUpdateSoftware(QDialog, Ui_Form):
         if not download_result:
             self.label_zt.setText("下载更新失败")
             return
+        # TODO: 校验压缩包
         patcher_zip_path = save_path
         extract_folder_path = "./patcher"
         print("正在创建解压目录...")
@@ -111,37 +96,6 @@ class WndUpdateSoftware(QDialog, Ui_Form):
         print("解压完成")
         msg_box = TimeMsgBox("提示", "更新准备就绪, 请关闭软件后手动重启", parent=self)
         msg_box.exec_()
-
-
-class ThdCheckUpdate(QThread):
-    # 检查更新线程
-    sig_get_download_info_finish = Signal(dict)  # 定义信号在线程类中
-
-    def __init__(self, get_update_info_req, protocal, server_host_name) -> None:
-        super().__init__()
-        self.get_update_info_req = get_update_info_req
-        self.protocal = protocal
-        self.server_host_name = server_host_name
-
-    def run(self):
-        print("开始检查更新")
-        data = self.send_request_get_update_info()
-        # 收到更新数据后通知updater窗口
-        self.sig_get_download_info_finish.emit(data)
-
-    def send_request_get_update_info(self):
-        path = '/api/netauth/v1/get_update_info'
-        body = self.get_update_info_req
-        url = self.protocal + self.server_host_name + path
-        response = requests.post(
-            url, 
-            json=body, 
-            timeout=2,
-            verify=False
-        )
-        if response.status_code != 200:
-            return {}
-        return response.json()
 
 
 class ThdDownloadFile(QThread):
@@ -159,7 +113,7 @@ class ThdDownloadFile(QThread):
         self.sig_refresh_process_bar.connect(self.refresh_ui)
 
     def run(self):
-        self.edt.setText(f'开始下载')
+        self.edt.setText('开始下载')
         if self.download_url == None:
             print("请传入下载地址")
             return
